@@ -1,0 +1,14 @@
+---
+index:
+    analysis:
+        analyzer:
+            configured_analyzer:
+                tokenizer: whitespace
+                filter: configured_edge_ngram_2
+        filter:
+            configured_edge_ngram_2:
+                type: edge_ngram_2
+                min_gram: 2
+                max_gram: 3
+                side: back
+                preserve_positions: true
