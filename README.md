@@ -78,9 +78,11 @@ See also
 
 [Combo Analyzer plugin][Combo]
 
+[Word Delimiter Filter 2 plugin][WDF]
 
 
-[ENGEsDoc]: http://www.elasticsearch.org/guide/reference/index-modules/analysis/word-delimiter-tokenfilter.html
+
+[ENGEsDoc]: http://www.elasticsearch.org/guide/reference/index-modules/analysis/edgengram-tokenfilter.html
     (ElasticSearch EdgeNGramFilter doc)
 
 [ENGJavadoc]: http://lucene.apache.org/core/4_0_0/analyzers-common/org/apache/lucene/analysis/ngram/EdgeNGramTokenFilter.html
@@ -88,3 +90,6 @@ See also
 
 [Combo]: https://github.com/yakaz/elasticsearch-analysis-combo/
     (Combo Analyzer plugin)
+
+[WDF]: https://github.com/yakaz/elasticsearch-analysis-worddelimiter2/
+    (Word Delimiter 2 plugin)
