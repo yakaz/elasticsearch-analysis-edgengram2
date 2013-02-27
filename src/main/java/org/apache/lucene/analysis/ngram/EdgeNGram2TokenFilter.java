@@ -1,6 +1,6 @@
 package org.apache.lucene.analysis.ngram;
 
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -77,6 +77,8 @@ public final class EdgeNGram2TokenFilter extends TokenFilter {
     private int curTermLength;
     private int curGramSize;
     private int tokStart;
+    private int tokEnd; // only used if the length changed before this filter
+    private boolean hasIllegalOffsets; // only if the length changed before this filter
     private int curPosIncr;
     private int accumPosIncr;
 
@@ -135,7 +137,7 @@ public final class EdgeNGram2TokenFilter extends TokenFilter {
      * @param maxGram the largest n-gram to generate
      */
     public EdgeNGram2TokenFilter(TokenStream input, String sideLabel, int minGram, int maxGram) {
-        this(input, sideLabel, minGram, maxGram, DEFAULT_PRESERVE_POSITIONS);
+        this(input, Side.getSide(sideLabel), minGram, maxGram, DEFAULT_PRESERVE_POSITIONS);
     }
 
     /**
@@ -162,6 +164,10 @@ public final class EdgeNGram2TokenFilter extends TokenFilter {
                     curTermLength = termAtt.length();
                     curGramSize = minGram;
                     tokStart = offsetAtt.startOffset();
+                    tokEnd = offsetAtt.endOffset();
+                    // if length by start + end offsets doesn't match the term text then assume
+                    // this is a synonym and don't adjust the offsets.
+                    hasIllegalOffsets = (tokStart + curTermLength) != tokEnd;
                     curPosIncr = preservePositions
                             ? posIncrAtt.getPositionIncrement() // preserve input position gaps
                             : 1;                                // always use a new position
@@ -174,7 +180,11 @@ public final class EdgeNGram2TokenFilter extends TokenFilter {
                     int start = side == Side.FRONT ? 0 : curTermLength - curGramSize;
                     int end = start + curGramSize;
                     clearAttributes();
-                    offsetAtt.setOffset(tokStart + start, tokStart + end);
+                    if (hasIllegalOffsets) {
+                        offsetAtt.setOffset(tokStart, tokEnd);
+                    } else {
+                        offsetAtt.setOffset(tokStart + start, tokStart + end);
+                    }
                     termAtt.copyBuffer(curTermBuffer, start, curGramSize);
                     curGramSize++;
                     posIncrAtt.setPositionIncrement(curPosIncr + accumPosIncr);

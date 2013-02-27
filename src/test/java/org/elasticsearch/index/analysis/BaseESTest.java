@@ -99,12 +99,12 @@ public class BaseESTest {
         String mapping = getMapping();
         if (mapping != null)
             createIndexRequest.mapping(TYPE, getMapping());
-        assertThat("Index creation", node.client().admin().indices().create(createIndexRequest).actionGet().acknowledged());
+        assertThat("Index creation", node.client().admin().indices().create(createIndexRequest).actionGet().isAcknowledged());
         logger.info("Running Cluster Health");
         ClusterHealthResponse clusterHealth = node.client().admin().cluster().health(clusterHealthRequest().waitForGreenStatus()).actionGet();
-        logger.info("Done Cluster Health, status " + clusterHealth.status());
-        assertThat(clusterHealth.timedOut(), equalTo(false));
-        assertThat(clusterHealth.status(), equalTo(ClusterHealthStatus.GREEN));
+        logger.info("Done Cluster Health, status " + clusterHealth.getStatus());
+        assertThat(clusterHealth.isTimedOut(), equalTo(false));
+        assertThat(clusterHealth.getStatus(), equalTo(ClusterHealthStatus.GREEN));
     }
 
     @AfterMethod
@@ -134,16 +134,16 @@ public class BaseESTest {
         for (int i = 0; i < output.length; i++) {
             assertThat("token "+i+" does not exist", tokens.hasNext());
             AnalyzeResponse.AnalyzeToken token = tokens.next();
-            assertThat("term "+i, token.term(), equalTo(output[i]));
+            assertThat("term "+i, token.getTerm(), equalTo(output[i]));
             if (startOffsets != null)
-                assertThat("startOffset "+i, token.startOffset(), equalTo(startOffsets[i]));
+                assertThat("startOffset "+i, token.getStartOffset(), equalTo(startOffsets[i]));
             if (endOffsets != null)
-                assertThat("endOffset "+i, token.endOffset(), equalTo(endOffsets[i]));
+                assertThat("endOffset "+i, token.getEndOffset(), equalTo(endOffsets[i]));
             if (types != null)
-                assertThat("type "+i, token.type(), equalTo(types[i]));
+                assertThat("type "+i, token.getType(), equalTo(types[i]));
             if (posIncrements != null) {
                 pos += posIncrements[i];
-                assertThat("position "+i, token.position(), equalTo(pos));
+                assertThat("position "+i, token.getPosition(), equalTo(pos));
             }
         }
     }
@@ -181,14 +181,14 @@ public class BaseESTest {
             System.out.println(searchQuery.string());
 
         SearchResponse searchResponse = node.client().search(searchRequest(INDEX).source(searchQuery)).actionGet();
-        assertThat("successful search", searchResponse.failedShards(), equalTo(0));
+        assertThat("successful search", searchResponse.getFailedShards(), equalTo(0));
 
         if (VERBOSE)
             System.out.println(searchResponse.toString());
 
-        assertThat("Same number of results", searchResponse.hits().totalHits(), equalTo((long)ids.length));
+        assertThat("Same number of results", searchResponse.getHits().totalHits(), equalTo((long)ids.length));
         int i = 0;
-        for (SearchHit searchHit : searchResponse.hits().hits()) {
+        for (SearchHit searchHit : searchResponse.getHits().getHits()) {
             assertThat("Result #" + (i+1) + " is good", searchHit.id(), equalTo(ids[i]));
             ++i;
         }
