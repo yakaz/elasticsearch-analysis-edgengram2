@@ -3,6 +3,12 @@ Elasticsearch Edge NGram 2 Filter
 
 The EdgeNGramFilter2 analysis plugin provides with an extension over the mainstream EdgeNGramTokenFilter.
 
+DEPRECATION NOTICE
+------------------
+
+This plugin is not compatible with ElasticSearch v0.90.3.
+Moreover, it is no longer needed since ElasticSearch v0.90.1, as the latter uses Lucene 4.3.0, which contains the fix for bug LUCENE-4810.
+
 Installation
 ------------
 
@@ -31,9 +37,11 @@ Version matrix:
 	-------------------------------------------------
 	| HashSplitter Analysis Plugin | ElasticSearch  |
 	-------------------------------------------------
-	| master                       | 0.90 -> master |
+	| (builtin fixed)              | 0.90.1 and up  |
 	-------------------------------------------------
-	| 1.1.0                        | 0.90 -> master |
+	| master                       | 0.90 -> 0.90.2 |
+	-------------------------------------------------
+	| 1.1.0                        | 0.90 -> 0.90.2 |
 	-------------------------------------------------
 	| 1.0.0                        | 0.19 -> 0.20   |
 	-------------------------------------------------
